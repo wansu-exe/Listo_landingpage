@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Listo: snap a bill, never miss a due date</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1D2442; --navy-2:#2A3358; --amber:#F5A623; --amber-ink:#7A4B00;
+  --bg:#F4F6FA; --surface:#FFFFFF; --ink:#1D2442; --muted:#5B6480; --line:#DDE2EE; --owl:#8FA3C8;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#141A33;--surface:#1D2442;--ink:#F1F3FA;--muted:#A8B1CC;--line:#323B62;--amber-ink:#F5A623;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#141A33;--surface:#1D2442;--ink:#F1F3FA;--muted:#A8B1CC;--line:#323B62;--amber-ink:#F5A623;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--sans)}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.12;margin:0;letter-spacing:-.01em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.btn{display:inline-block;font:700 16px/1 var(--sans);padding:15px 24px;border-radius:12px;border:0;text-decoration:none;cursor:pointer}
+.btn-amber{background:var(--amber);color:#1D2442}
+.btn-amber:hover{filter:brightness(1.06)}
+.btn-ghost{border:2px solid var(--owl);color:#fff;background:transparent}
+
+/* hero */
+.hero{background:var(--navy);color:#fff;padding-bottom:88px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brand{display:flex;align-items:center;gap:10px;font:700 26px var(--serif);text-decoration:none}
+.links{display:flex;align-items:center;gap:28px;font-weight:600}
+.links a{text-decoration:none;color:#D5DBEE}
+.links a:hover{color:#fff}
+.links .btn{padding:11px 18px;color:#1D2442}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding-top:44px}
+.hero h1{font-size:clamp(40px,5.4vw,66px)}
+.hero p.lead{font-size:20px;color:#C9D1EA;max-width:30em;margin:22px 0 32px}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap}
+.tag{margin-top:26px;font:italic 400 18px var(--serif);color:var(--amber)}
+.stage{display:flex;flex-direction:column;align-items:center;gap:16px}
+.phone{width:290px;height:560px;border-radius:40px;padding:14px;background:linear-gradient(160deg,#0B1022,#1B2347);border:2px solid #34406E;position:relative;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:84px;height:22px;border-radius:12px;background:#05070f}
+.screen{position:absolute;inset:14px;border-radius:28px;padding:48px 16px 18px;display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .35s}
+.screen.on{opacity:1;pointer-events:auto}
+.screen h3{font:700 13px var(--sans);text-align:center;color:#C9D1EA;margin-bottom:14px}
+.bill{position:relative;background:#F3EFE4;color:#2b2b2b;border-radius:10px;padding:18px 16px;border:3px solid var(--amber);transform:rotate(-2deg);overflow:hidden}
+.bill b.biller{color:#E8541E;font:700 19px var(--sans)}
+.bill small{display:block;color:#777;font-size:11px}
+.bill .amt{font:700 28px var(--sans);margin:10px 0 2px}
+.bill i{display:block;height:7px;border-radius:4px;background:#d8d3c4;margin:7px 0;width:80%}
+.scan{position:absolute;left:0;right:0;top:0;height:3px;background:var(--amber);box-shadow:0 0 18px 6px rgba(245,166,35,.6);opacity:0}
+.scanning .scan{opacity:1;animation:sweep 1.3s ease-in-out forwards}
+@keyframes sweep{from{top:0}to{top:100%}}
+.hint{text-align:center;color:#C9D1EA;font-size:13px;margin:18px 0 auto}
+.shutter{align-self:center;width:66px;height:66px;border-radius:50%;border:4px solid #fff;background:var(--amber);cursor:pointer;box-shadow:0 0 0 4px #0B1022 inset}
+.found{display:flex;align-items:center;gap:8px;font:700 12px var(--sans);color:#C9D1EA;margin-bottom:8px}
+.found svg{width:22px;height:22px}
+.screen h4{font:700 19px/1.25 var(--sans);margin:0 0 12px;color:#fff}
+.rows{background:#141B38;border-radius:14px;padding:4px 14px}
+.rows div{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #26305a;font-size:14px;color:#C9D1EA}
+.rows div:last-child{border:0}
+.rows b{color:#fff}
+.chip{background:var(--amber);color:#1D2442;border-radius:8px;padding:1px 9px;font-weight:700;font-size:12px}
+.rem{margin-top:12px;background:#141B38;border-radius:14px;padding:11px 14px;font-size:13px;color:#C9D1EA}
+.rem b{display:block;color:#fff}
+.screen .btn{width:100%;text-align:center;margin-top:auto;padding:14px}
+.note{text-align:center;font-size:11px;color:#8FA3C8;margin:10px 0 8px}
+.done{display:none;margin-top:12px;text-align:center;font-weight:700;color:var(--amber)}
+.stage .replay{background:none;border:0;color:#C9D1EA;font:600 14px var(--sans);text-decoration:underline;cursor:pointer}
+
+/* sections */
+section{padding:88px 0}
+h2{font-size:clamp(30px,3.6vw,44px);max-width:20em}
+.sub{color:var(--muted);max-width:36em;margin:14px 0 0;font-size:18px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:48px;border-top:2px solid var(--ink)}
+.step{padding:28px 28px 0 0}
+.step .n{font:700 44px var(--serif);color:var(--amber-ink)}
+.step h3{font-size:24px;margin:8px 0 8px}
+.step p{margin:0;color:var(--muted)}
+.proof{margin-top:44px;background:var(--navy);color:#fff;border-radius:18px;padding:26px 30px;display:flex;gap:28px;flex-wrap:wrap;align-items:center}
+.proof strong{font:700 17px var(--serif);color:var(--amber);margin-right:auto}
+.proof span{font-size:15px;color:#C9D1EA}
+.proof b{display:block;color:#fff;font:700 18px var(--sans)}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:40px 40px;margin-top:48px}
+.feat div{border-top:3px solid var(--amber);padding-top:16px}
+.feat h3{font-size:21px;margin-bottom:6px}
+.feat p{margin:0;color:var(--muted);font-size:16px}
+.feat em{font-style:normal;font-size:13px;font-weight:700;color:var(--amber-ink)}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+.plan{border-radius:20px;padding:36px}
+.plan.free{background:var(--surface);border:2px solid var(--line)}
+.plan.prem{background:var(--navy);color:#fff}
+.plan h3{font-size:30px;display:flex;justify-content:space-between;align-items:baseline}
+.plan.prem h3{color:var(--amber)}
+.plan p{margin:8px 0 18px;font-style:italic;color:var(--muted)}
+.plan.prem p{color:#C9D1EA}
+.plan ul{margin:0;padding-left:20px}
+.plan li{margin:7px 0}
+.cta{background:var(--navy);color:#fff;text-align:center;padding:84px 0}
+.cta h2{margin:0 auto}
+.cta p{color:#C9D1EA;margin:16px auto 30px;max-width:30em}
+.cta .cta-row{justify-content:center}
+.contact{margin-top:28px;color:#C9D1EA;font-size:15px}
+footer{padding:28px 0;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+@media (max-width:900px){
+  .hero-grid,.plans{grid-template-columns:1fr}
+  .steps,.feat{grid-template-columns:1fr}
+  .links a:not(.btn){display:none}
+}
+@media (prefers-reduced-motion:reduce){.scanning .scan{animation-duration:.01s}.screen{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#top" aria-label="Listo home">
+        <svg width="38" height="38" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="44" fill="#0F1630" stroke="#8FA3C8" stroke-width="4"/><path d="M12 22l16 10M88 22L72 32" stroke="#8FA3C8" stroke-width="6" stroke-linecap="round"/><circle cx="34" cy="48" r="15" fill="#F5A623"/><circle cx="66" cy="48" r="15" fill="#F5A623"/><circle cx="34" cy="48" r="7" fill="#0F1630"/><circle cx="66" cy="48" r="7" fill="#0F1630"/><path d="M50 58l5 10-5 7-5-7z" fill="#8FA3C8"/></svg>
+        Listo
+      </a>
+      <div class="links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a class="btn btn-amber" href="#get">Get Listo</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid" id="top">
+      <div>
+        <h1>Snap your bill. Listo remembers the due date.</h1>
+        <p class="lead">Take a photo of any bill, screenshot, or document. Listo reads it, adds it to your list, and reminds you before it’s due. Late fees stop being a surprise.</p>
+        <div class="cta-row">
+          <a class="btn btn-amber" href="#get">Download free</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <div class="tag">Ever-alert. Quietly watching.</div>
+      </div>
+
+      <div class="stage">
+        <div class="phone" id="phone">
+          <div class="notch"></div>
+
+          <div class="screen on" id="s1">
+            <h3>Capture</h3>
+            <div class="bill" id="bill">
+              <b class="biller">MERALCO</b><small>Electric bill · Aug 2026</small>
+              <i></i><i style="width:60%"></i>
+              <small style="margin-top:10px">Amount due</small>
+              <div class="amt">₱3,421.00</div>
+              <small>Due date</small><b>September 15, 2026</b>
+              <i style="margin-top:12px"></i>
+              <div class="scan"></div>
+            </div>
+            <p class="hint" id="hint">Point at a bill, screenshot, or document.</p>
+            <button class="shutter" id="shutter" aria-label="Scan the Meralco bill"></button>
+          </div>
+
+          <div class="screen" id="s2">
+            <div class="found">
+              <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="44" fill="#0F1630" stroke="#8FA3C8" stroke-width="5"/><circle cx="34" cy="48" r="15" fill="#F5A623"/><circle cx="66" cy="48" r="15" fill="#F5A623"/><circle cx="34" cy="48" r="7" fill="#0F1630"/><circle cx="66" cy="48" r="7" fill="#0F1630"/></svg>
+              Listo found something
+            </div>
+            <h4>I found a bill that needs your attention.</h4>
+            <div class="rows">
+              <div>Biller <b>Meralco</b></div>
+              <div>Amount <b>₱3,421</b></div>
+              <div>Due date <b>Sep 15, 2026</b></div>
+              <div>Category <span class="chip">Bills</span></div>
+            </div>
+            <div class="rem"><b>Reminder scheduled</b>Sep 14 · 9:00 AM</div>
+            <div class="note">Nothing is saved until you confirm.</div>
+            <button class="btn btn-amber" id="confirm">Add to responsibilities</button>
+            <div class="done" id="done">Saved. Listo will remind you on Sep 14.</div>
+          </div>
+        </div>
+        <button class="replay" id="replay" hidden>Replay demo</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <h2>Three taps from paper bill to scheduled reminder</h2>
+    <p class="sub">Bills arrive as texts, emails, chat screenshots, and paper. Listo takes all of them, so you stop typing in every task yourself.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Take a snap</h3><p>Photograph a bill, upload a screenshot or document, or type a quick note.</p></div>
+      <div class="step"><div class="n">2</div><h3>Listo reads it</h3><p>It picks out the biller, amount, due date, category, and whether the bill repeats.</p></div>
+      <div class="step"><div class="n">3</div><h3>Confirm and get reminded</h3><p>You check the details, and Listo schedules the reminder at the right time.</p></div>
+    </div>
+    <div class="proof">
+      <strong>Why a reminder app is not enough</strong>
+      <span><b>40 studies</b>link high mental load to forgetting future tasks</span>
+      <span><b>Matos et al., 2020</b>Advances in Cognitive Psychology</span>
+    </div>
+  </div>
+</section>
+
+<section id="features" style="padding-top:0">
+  <div class="wrap">
+    <h2>Built for the bills Filipinos actually get</h2>
+    <p class="sub">Utilities, telecom, condo dues, and credit cards come first.</p>
+    <div class="feat">
+      <div><h3>Photo, screenshot, or note</h3><p>Capture a bill the way it reached you, in any format.</p></div>
+      <div><h3>Reads the details for you</h3><p>Biller, amount, due date, category, and recurrence are filled in automatically.</p></div>
+      <div><h3>You approve every entry</h3><p>Edit anything before it saves, so a misread never becomes a missed payment.</p></div>
+      <div><h3>Reminders at the right time</h3><p>Listo recommends and schedules when to nudge you.</p></div>
+      <div><h3>A morning briefing</h3><p>Each day, see what needs attention today, ranked by urgency.</p></div>
+      <div><h3>Repeat bills on autopilot</h3><p>Monthly bills track themselves, with no re-uploading. <em>Premium</em></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" style="padding-top:0">
+  <div class="wrap">
+    <h2>Start free. Upgrade when you have a lot of bills.</h2>
+    <div class="plans">
+      <div class="plan free">
+        <h3>Free</h3>
+        <p>Try the full app, with monthly limits.</p>
+        <ul><li>Limited uploads per month</li><li>Bills organized by AI</li><li>Basic reminders</li></ul>
+      </div>
+      <div class="plan prem">
+        <h3>Premium <span>₱149/mo</span></h3>
+        <p>For people juggling many bills.</p>
+        <ul><li>Unlimited uploads</li><li>Automatic tracking of repeat bills</li><li>Early access to new features</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta" id="get">
+  <div class="wrap">
+    <h2>Scan your first bill today</h2>
+    <p>Join the Listo early-access list. Pilot partners get early access and a direct say in what we build.</p>
+    <div class="cta-row">
+      <a class="btn btn-amber" href="#top">Download free</a>
+      <a class="btn btn-ghost" href="mailto:hello@listo.example">Become a pilot partner</a>
+    </div>
+    <div class="contact">Questions? hello@listo.example · Facebook: Listo PH</div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><span>© 2026 Listo by Team Ignite</span><span>Supports SDG 9 and SDG 8</span></div>
+</footer>
+
+<script>
+(function(){
+  var s1=document.getElementById('s1'), s2=document.getElementById('s2'),
+      bill=document.getElementById('bill'), shutter=document.getElementById('shutter'),
+      hint=document.getElementById('hint'), confirmBtn=document.getElementById('confirm'),
+      done=document.getElementById('done'), replay=document.getElementById('replay');
+  var busy=false;
+  shutter.addEventListener('click',function(){
+    if(busy) return; busy=true;
+    hint.textContent='Listo is reading your bill…';
+    bill.classList.add('scanning');
+    setTimeout(function(){ s1.classList.remove('on'); s2.classList.add('on'); busy=false; },1500);
+  });
+  confirmBtn.addEventListener('click',function(){
+    confirmBtn.style.display='none'; done.style.display='block'; replay.hidden=false;
+  });
+  replay.addEventListener('click',function(){
+    s2.classList.remove('on'); s1.classList.add('on');
+    bill.classList.remove('scanning'); void bill.offsetWidth;
+    hint.textContent='Point at a bill, screenshot, or document.';
+    confirmBtn.style.display=''; done.style.display='none'; replay.hidden=true;
+  });
+})();
+</script>
+</body>
+</html>
